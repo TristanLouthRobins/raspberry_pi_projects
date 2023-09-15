@@ -2,7 +2,7 @@
 # Version 2.0 dev (8 Sep 2023) ------
 # Tristan Louth-Robins ------------
 
-# from gpiozero import Button, LED
+from gpiozero import Button, LED
 from time import sleep
 import pygame
 import datetime as dt
@@ -10,7 +10,15 @@ import csv
 
 # Initialise pygame mixer
 pygame.mixer.init()
-# Initialise the csv writer
+
+# Initialise the buttons
+btn_rocky = Button(17)
+btn_regrowth = Button(27)
+
+# Initialise LEDs
+#rocky_grn = LED(22)
+#press_yel = LED(23)
+#regrw_red = LED(24)
 
 print("Running Two Sites audio playback script\n#####\n")
 
@@ -18,9 +26,11 @@ print("Running Two Sites audio playback script\n#####\n")
 # or the file is written to once enough data is stored in a temp dataframe.
 try:
     print("Obtaining the dataset to write interaction data to.\n#####\n")
-    path = '/Users/tristanlouth-robins/Documents/Documents - MacBook Pro/Python/raspberry_pi_projects/two_sites/data/two_sites_data.csv'
+    # Remember to update path name on RPi
+    data_path = '/Users/tristanlouth-robins/Documents/Documents - MacBook Pro/Python/raspberry_pi_projects/two_sites/data/two_sites_data.csv'
+
     # Open in write mode read through the current dataset and print the output
-    with open(path, encoding='utf-8', newline='') as data:
+    with open(data_path, encoding='utf-8', newline='') as data:
         # CSV row counter and row reader.
         print("The file has been successfully retrieved.\n#####\n")
         print("# CURRENT TWO SITES DATASET #")
@@ -34,12 +44,14 @@ except FileNotFoundError:
 except Exception:
     print("Something else went wrong here.")
 
-class But:
+class ButtonPress:
     def __init__(self, ledpin, button, filename, path):
         self.pin = ledpin
         self.button = button
         self.file = filename
         self.path = pygame.mixer.Sound(path)
+        print("LED PIN: ", str(self.pin))
+        print("BUTTON PIN: ", str(self.button))
 
     def play(self, fadeout, delay, vol_level):
         print("PLAYBACK STATUS\n#####")
@@ -47,9 +59,11 @@ class But:
         print(f"Accessing file from: {self.path}")
         print(f"Fadeout is: {fadeout}")
         print(f"Delay is: {delay}")
-        print(f"Volume level: {vol_level}")
+        print(f"Volume level: {vol_level}\n")
+
+
         
-        # Audio endeded or switched
+        # Audio ended or switched
         sleep(1)
 
         print("Writing user interaction to dataset.")
@@ -74,10 +88,14 @@ class But:
         return f"{now:%d-%m-%Y, %I:%M %p}"
 
 
+rocky_path = '/Users/tristanlouth-robins/Documents/Documents - MacBook Pro/Python/raspberry_pi_projects/two_sites/data/rocky_river.wav'
+rocky = ButtonPress(22, 17, "Rocky River", rocky_path)
 
-rocky = But(22, 17, "Rocky River", '/Users/tristanlouth-robins/Documents/Documents - MacBook Pro/Python/raspberry_pi_projects/two_sites/data/rocky_river.wav')
+regrowth_path = '/Users/tristanlouth-robins/Documents/Documents - MacBook Pro/Python/raspberry_pi_projects/two_sites/data/rocky_river.wav'
+regrowth = ButtonPress(24, 27, "Regrowth", regrowth_path)
 
-print(rocky.play(2000, 2, 0.9))
+btn_rocky.when_pressed = rocky.play(2000, 2, 0.9)
+btn_regrowth.when_pressed = regrowth.play(2000, 2, 0.9)
 
 #i = 0
 #while i < 10:
