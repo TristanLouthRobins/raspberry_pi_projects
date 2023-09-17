@@ -1,5 +1,5 @@
 # TWO SITES (2023) audio player ---
-# Version 2.0 dev (8 Sep 2023) ------
+# Version 2.0 dev (17/09/2023) ------
 # Tristan Louth-Robins ------------
 
 from gpiozero import Button, LED
@@ -8,17 +8,22 @@ import pygame
 import datetime as dt
 import csv
 
-# Initialise pygame mixer
 pygame.mixer.init()
 
-# Initialise the buttons
-btn_rocky = Button(17)
-btn_regrowth = Button(27)
+# setup audio files --
+a_rocky = pygame.mixer.Sound('/home/tristanlouthrobins/Desktop/data/rocky.wav')
+a_regrw = pygame.mixer.Sound('/home/tristanlouthrobins/Desktop/data/regrowth.wav')
 
-# Initialise LEDs
-#rocky_grn = LED(22)
-#press_yel = LED(23)
-#regrw_red = LED(24)
+# setup leds --
+rocky_grn = LED(22)
+press_yel = LED(23)
+regrw_red = LED(24)
+
+# setup buttons
+btn_rocky = Button(17) # button to start rocky audio
+btn_regrw = Button(27) # button to start regrowth audio
+
+volume_level = 0.8 # default volume level
 
 print("Running Two Sites audio playback script\n#####\n")
 
@@ -27,7 +32,7 @@ print("Running Two Sites audio playback script\n#####\n")
 try:
     print("Obtaining the dataset to write interaction data to.\n#####\n")
     # Remember to update path name on RPi
-    data_path = '/Users/tristanlouth-robins/Documents/Documents - MacBook Pro/Python/raspberry_pi_projects/two_sites/data/two_sites_data.csv'
+    data_path = '/home/tristanlouthrobins/Desktop/data/two_sites_data.csv'
 
     # Open in write mode read through the current dataset and print the output
     with open(data_path, encoding='utf-8', newline='') as data:
@@ -44,25 +49,22 @@ except FileNotFoundError:
 except Exception:
     print("Something else went wrong here.")
 
-class ButtonPress:
-    def __init__(self, ledpin, button, filename, path):
-        self.pin = ledpin
+class SiteButton:
+    def __init__(self, ledpin, button, filename, audio):
+        self.led = ledpin
         self.button = button
         self.file = filename
-        self.path = pygame.mixer.Sound(path)
-        print("LED PIN: ", str(self.pin))
+        self.audio = audio
+        print("LED PIN: ", str(self.led))
         print("BUTTON PIN: ", str(self.button))
 
     def play(self, fadeout, delay, vol_level):
         print("PLAYBACK STATUS\n#####")
         print(f"{self.file} button pressed.")
-        print(f"Accessing file from: {self.path}")
         print(f"Fadeout is: {fadeout}")
         print(f"Delay is: {delay}")
         print(f"Volume level: {vol_level}\n")
-
-
-        
+       
         # Audio ended or switched
         sleep(1)
 
@@ -70,9 +72,9 @@ class ButtonPress:
 
         sleep(1)
 
-        data_write = [str(self.currenttime()), self.file, 'Y']
+        data_write = [str(self.currenttime()), self.file]
 
-        with open(path, 'a', encoding='UTF8', newline='') as data:
+        with open(data_path, 'a', encoding='UTF8', newline='') as data:
             writer = csv.writer(data)
             writer.writerow(data_write)
             # close the csv file 
@@ -87,15 +89,13 @@ class ButtonPress:
         now = dt.datetime.now()
         return f"{now:%d-%m-%Y, %I:%M %p}"
 
+# Instantiate two SiteButton objects for the files
+rocky = SiteButton(22, 17, "Rocky River", a_rocky)
+regrowth = SiteButton(24, 27, "Regrowth", btn_regrw)
 
-rocky_path = '/Users/tristanlouth-robins/Documents/Documents - MacBook Pro/Python/raspberry_pi_projects/two_sites/data/rocky_river.wav'
-rocky = ButtonPress(22, 17, "Rocky River", rocky_path)
-
-regrowth_path = '/Users/tristanlouth-robins/Documents/Documents - MacBook Pro/Python/raspberry_pi_projects/two_sites/data/rocky_river.wav'
-regrowth = ButtonPress(24, 27, "Regrowth", regrowth_path)
-
+# Actions for when buttons are pressed
 btn_rocky.when_pressed = rocky.play(2000, 2, 0.9)
-btn_regrowth.when_pressed = regrowth.play(2000, 2, 0.9)
+btn_regrw.when_pressed = regrowth.play(2000, 2, 0.9)
 
 #i = 0
 #while i < 10:
