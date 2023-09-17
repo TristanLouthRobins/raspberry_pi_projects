@@ -1,5 +1,5 @@
 # TWO SITES (2023) audio player ---
-# Version 1.3 (15 SEP 2023) ------
+# Version 1.3 (16/09/2023) --------
 # Tristan Louth-Robins ------------
 
 from gpiozero import Button, LED
@@ -50,20 +50,22 @@ except Exception:
     print("Something else went wrong here.")
 
 def currenttime():
+    """Gets the current time in d/m/Y and h:m am/pm format"""
     now = dt.datetime.now()
     return f"{now:%d-%m-%Y, %I:%M %p}"
 
 def rocky():
+    """Process for Rocky River playback."""
     a_regrw.fadeout(2000)
     print("Rocky audio button pressed.")
     press_yel.on()
     sleep(1)
     rocky_grn.on()
     sleep(1)
-    a_regrw.set_volume(volume_level)
+    a_rocky.set_volume(volume_level)
     pygame.time.delay(100)
-    print("################\nplayback started")
-    print(a_rocky.get_volume())
+    print("Audio playback started")
+    print("Volume setting: ", a_rocky.get_volume())
     a_rocky.play()
     press_yel.off()
     sleep(4)
@@ -73,7 +75,7 @@ def rocky():
 
     sleep(1)
 
-    data_write = [str(currenttime()), 'rocky_river', 'Y']
+    data_write = [str(currenttime()), 'rocky']
 
     with open(data_path, 'a', encoding='UTF8', newline='') as data:
         writer = csv.writer(data)
@@ -84,6 +86,7 @@ def rocky():
 
 
 def regrw():
+    """Process for Regrowth site playback."""
     a_rocky.fadeout(2000)
     print("Regrowth audio button pressed.")
     press_yel.on()
@@ -92,8 +95,8 @@ def regrw():
     sleep(1)
     a_regrw.set_volume(volume_level)
     pygame.time.delay(100)
-    print("################\nplayback started")
-    print(a_rocky.get_volume())
+    print("Audio playback started")
+    print("Volume setting: ", a_regrw.get_volume())
     a_regrw.play()
     press_yel.off()
     sleep(4)
@@ -103,7 +106,7 @@ def regrw():
 
     sleep(1)
 
-    data_write = [str(currenttime()), 'regrowth site', 'Y']
+    data_write = [str(currenttime()), 'regrowth']
 
     with open(data_path, 'a', encoding='UTF8', newline='') as data:
         writer = csv.writer(data)
