@@ -8,16 +8,16 @@ import datetime as dt
 import pygame
 import csv
 
-# setup leds --
-rocky_grn = LED(22)
-press_yel = LED(23)
-regrw_red = LED(24)
-
 pygame.mixer.init()
 
 # setup audio files --
 a_rocky = pygame.mixer.Sound('/home/tristanlouthrobins/Desktop/data/rocky.wav')
 a_regrw = pygame.mixer.Sound('/home/tristanlouthrobins/Desktop/data/regrowth.wav')
+
+# setup leds --
+rocky_grn = LED(22)
+press_yel = LED(23)
+regrw_red = LED(24)
 
 # setup buttons
 btn_rocky = Button(17) # button to start rocky audio
