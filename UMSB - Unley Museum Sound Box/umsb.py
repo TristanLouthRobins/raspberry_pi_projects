@@ -11,8 +11,8 @@ import csv
 pygame.mixer.init()
 
 # setup audio files --
-a_rocky = pygame.mixer.Sound('/home/tristanlouthrobins/Desktop/data/audio1-eng.wav')
-a_regrw = pygame.mixer.Sound('/home/tristanlouthrobins/Desktop/data/audio2-gre.wav')
+a_rocky = pygame.mixer.Sound('/home/tristanlouthrobins/Desktop/data/audio1.wav')
+a_regrw = pygame.mixer.Sound('/home/tristanlouthrobins/Desktop/data/audio2.wav')
 
 # setup leds --
 rocky_grn = LED(22)
@@ -43,12 +43,16 @@ except FileNotFoundError:
 except Exception:
     print("Something else went wrong here.")
 
+rocky_channel = pygame.mixer.Channel(0)
+regrowth_channel = pygame.mixer.Channel(1)
+
 class SiteButton:
     def __init__(self, ledpin, button, filename, audio):
         self.led = ledpin
         self.button = button
         self.file = filename
         self.audio = audio
+        self.channel = channel
         self.audio.set_volume(volume_level)
         self.is_playing = False
 
@@ -59,13 +63,16 @@ class SiteButton:
 
     def handle_press(self):
         if self.audio.get_num_channels() > 0:
-            print(f"{self.file} is currently playing, restarting...")
+            print(f"{self.file} is currently playing, restarting to avoid overlap...")
             self.audio.stop()
             sleep(0.5)
         else:
-            print(f"{self.file} not playing, starting over...")
+            self.channel.stop()
+            print(f"{self.file} not playing, all good...")
 
-        self.audio.play()
+        pygame.mixer.stop()
+        sleep(0.5)
+        self.channel.play(self.audio)
         self.is_playing = True
         self.log_interaction()
 
@@ -83,5 +90,5 @@ class SiteButton:
         return f"{now:%d-%m-%Y, %I:%M %p}"
 
 # Instantiate buttons with their logic attached
-rocky = SiteButton(rocky_grn, btn_rocky, "English", a_rocky)
-regrowth = SiteButton(regrw_red, btn_regrw, "Greek", a_regrw)
+rocky = SiteButton(rocky_grn, btn_rocky, "English", a_rocky, rocky_channel)
+regrowth = SiteButton(regrw_red, btn_regrw, "Greek", a_regrw, regrowth_channel)
