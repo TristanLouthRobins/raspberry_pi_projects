@@ -1,4 +1,4 @@
-# UNLEY MUSEUM SOUNDBOX - UMSB v.1
+# UNLEY MUSEUM SOUNDBOX - UMSB v 1.1
 # Tristan Louth-Robins, April 2025
 # Adapted from legacy code for Two Sites soundbox (October 2023)
 
@@ -11,17 +11,17 @@ import csv
 pygame.mixer.init()
 
 # setup audio files --
-a_rocky = pygame.mixer.Sound('/home/tristanlouthrobins/Desktop/data/audio1.wav')
-a_regrw = pygame.mixer.Sound('/home/tristanlouthrobins/Desktop/data/audio2.wav')
+audio1 = pygame.mixer.Sound('/home/tristanlouthrobins/Desktop/data/audio1.wav')
+audio2 = pygame.mixer.Sound('/home/tristanlouthrobins/Desktop/data/audio2.wav')
 
 # setup leds --
-rocky_grn = LED(22)
-press_yel = LED(23)
-regrw_red = LED(24)
+audio1_grn = LED(22)
+audio_between = LED(23)
+audio2_red = LED(24)
 
 # setup buttons
-btn_rocky = Button(17)  # button to start audio 1 - English audio
-btn_regrw = Button(27)  # button to start audio 2 - Greek audio
+btn_audio1 = Button(17)  # button to start audio 1 - English audio
+btn_audio2 = Button(27)  # button to start audio 2 - Greek audio
 
 volume_level = 0.8  # default volume level
 
@@ -43,8 +43,8 @@ except FileNotFoundError:
 except Exception:
     print("Something else went wrong here.")
 
-rocky_channel = pygame.mixer.Channel(0)
-regrowth_channel = pygame.mixer.Channel(1)
+audio1_channel = pygame.mixer.Channel(0)
+audio2_channel = pygame.mixer.Channel(1)
 
 class SiteButton:
     def __init__(self, ledpin, button, filename, audio):
@@ -79,6 +79,7 @@ class SiteButton:
     def log_interaction(self):
         print("Writing user interaction to dataset.")
         data_write = [str(self.currenttime()), self.file]
+        sleep(0.5)
         with open(data_path, 'a', encoding='UTF8', newline='') as data:
             writer = csv.writer(data)
             writer.writerow(data_write)
@@ -90,5 +91,5 @@ class SiteButton:
         return f"{now:%d-%m-%Y, %I:%M %p}"
 
 # Instantiate buttons with their logic attached
-rocky = SiteButton(rocky_grn, btn_rocky, "English", a_rocky, rocky_channel)
-regrowth = SiteButton(regrw_red, btn_regrw, "Greek", a_regrw, regrowth_channel)
+audio1_action = SiteButton(audio1_grn, btn_audio1, "English dialogue", audio1, audio1_channel)
+audio2_action = SiteButton(audio2_red, btn_audio2, "Greek dialogue", audio2, audio2_channel)
