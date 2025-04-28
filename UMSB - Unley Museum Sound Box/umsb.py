@@ -11,8 +11,8 @@ import csv
 pygame.mixer.init()
 
 # setup audio files --
-audio1 = pygame.mixer.Sound('/home/tristanlouthrobins/Desktop/data/audio1.wav')
-audio2 = pygame.mixer.Sound('/home/tristanlouthrobins/Desktop/data/audio2.wav')
+audio1 = pygame.mixer.Sound('/home/xyz/Desktop/data/audio1.wav')
+audio2 = pygame.mixer.Sound('/home/xyz/Desktop/data/audio2.wav')
 
 # setup leds --
 audio1_grn = LED(22)
